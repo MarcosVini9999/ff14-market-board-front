@@ -1,7 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, Search, Heart, BarChart2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Types
 type Player = {
@@ -90,32 +110,35 @@ const PlayerImpersonation: React.FC<{ onImpersonate: (playerId: string) => void 
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[url('https://i.imgur.com/uBGMSA3.jpeg')] bg-cover bg-center">
-      <FF14Box title="Player Impersonation">
-        <div className="flex flex-col items-center">
-          <div className="relative w-64 mb-4">
-            <select
-              className="w-full p-2 bg-[#2a2a2a] border border-[#3d3d3d] rounded appearance-none text-[#c0a062]"
-              value={selectedPlayer}
-              onChange={(e) => setSelectedPlayer(e.target.value)}
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <FF14Box title="Player Impersonation">
+          <div className="flex flex-col items-center">
+            <Select onValueChange={setSelectedPlayer} value={selectedPlayer}>
+              <SelectTrigger className="w-64 mb-4 bg-[#2a2a2a] border-[#3d3d3d] text-[#c0a062]">
+                <SelectValue placeholder="Select a player" />
+              </SelectTrigger>
+              <SelectContent>
+                {players.map((player) => (
+                  <SelectItem key={player.id} value={player.id}>
+                    {player.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              className="bg-[#3d3d3d] text-[#c0a062] hover:bg-[#4a4a4a]"
+              onClick={() => onImpersonate(selectedPlayer)}
+              disabled={!selectedPlayer}
             >
-              <option value="">--- Select Player ---</option>
-              {players.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDown className="absolute right-2 top-3 pointer-events-none text-[#c0a062]" />
+              Impersonate
+            </Button>
           </div>
-          <button
-            className="px-4 py-2 bg-[#3d3d3d] text-[#c0a062] rounded hover:bg-[#4a4a4a]"
-            onClick={() => onImpersonate(selectedPlayer)}
-            disabled={!selectedPlayer}
-          >
-            Impersonate
-          </button>
-        </div>
-      </FF14Box>
+        </FF14Box>
+      </motion.div>
     </div>
   );
 };
@@ -138,114 +161,132 @@ const Dashboard: React.FC<{
   return (
     <div className="min-h-screen bg-[url('https://i.imgur.com/uBGMSA3.jpeg')] bg-cover bg-center p-4">
       <div className="max-w-6xl mx-auto space-y-4">
-        <FF14Box title="Item Search">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div>
-              <div className="mb-4">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search items..."
-                    className="w-full p-2 bg-[#2a2a2a] border border-[#3d3d3d] rounded pl-8 text-[#c0a062]"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <Search className="absolute left-2 top-2.5 text-[#c0a062]" />
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <FF14Box title="Item Search">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div>
+                <div className="mb-4">
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      placeholder="Search items..."
+                      className="w-full bg-[#2a2a2a] border-[#3d3d3d] text-[#c0a062] pl-8"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search className="absolute left-2 top-2.5 text-[#c0a062]" />
+                  </div>
+                </div>
+                <div className="space-y-1 max-h-96 overflow-y-auto">
+                  <AnimatePresence>
+                    {filteredItems.map(([item, quantity]) => (
+                      <motion.div
+                        key={item}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-between items-center p-2 bg-[#2a2a2a] hover:bg-[#3d3d3d] text-[#c0a062]"
+                          onClick={() => onCreateOffer(item)}
+                        >
+                          <span>
+                            {quantity}x {item}
+                          </span>
+                        </Button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
               </div>
-              <div className="space-y-1 max-h-96 overflow-y-auto">
-                {filteredItems.map(([item, quantity]) => (
-                  <div
-                    key={item}
-                    className="flex justify-between items-center p-2 bg-[#2a2a2a] rounded cursor-pointer hover:bg-[#3d3d3d]"
-                    onClick={() => onCreateOffer(item)}
-                  >
-                    <span className="text-[#c0a062]">
-                      {quantity}x {item}
-                    </span>
-                  </div>
-                ))}
+              <div>
+                <h3 className="text-[#c0a062] text-lg mb-2">Sell Offers:</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-[#c0a062]">Name</TableHead>
+                      <TableHead className="text-[#c0a062]">Amount</TableHead>
+                      <TableHead className="text-[#c0a062]">Price Per Unit</TableHead>
+                      <TableHead className="text-[#c0a062]">Total Price</TableHead>
+                      <TableHead className="text-[#c0a062]">Ends At</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sellOffers.map((offer) => (
+                      <TableRow key={offer.id}>
+                        <TableCell className="text-[#c0a062]">{offer.playerName}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.amount}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.pricePerUnit}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.totalPrice}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.endsAt}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                <h3 className="text-[#c0a062] text-lg mt-4 mb-2">Buy Offers:</h3>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-[#c0a062]">Name</TableHead>
+                      <TableHead className="text-[#c0a062]">Amount</TableHead>
+                      <TableHead className="text-[#c0a062]">Price Per Unit</TableHead>
+                      <TableHead className="text-[#c0a062]">Total Price</TableHead>
+                      <TableHead className="text-[#c0a062]">Ends At</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {buyOffers.map((offer) => (
+                      <TableRow key={offer.id}>
+                        <TableCell className="text-[#c0a062]">{offer.playerName}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.amount}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.pricePerUnit}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.totalPrice}</TableCell>
+                        <TableCell className="text-[#c0a062]">{offer.endsAt}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
+            </div>
+          </FF14Box>
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <div className="flex justify-between items-center">
+            <div className="bg-[#1d1d1d] bg-opacity-90 border border-[#3d3d3d] rounded-md overflow-hidden p-2 text-xl text-[#c0a062]">
+              Gold: {player.gold}
             </div>
             <div>
-              <h3 className="text-[#c0a062] text-lg mb-2">Sell Offers:</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-[#3d3d3d]">
-                    <tr>
-                      <th className="text-left p-2 text-[#c0a062]">Name</th>
-                      <th className="text-left p-2 text-[#c0a062]">Amount</th>
-                      <th className="text-left p-2 text-[#c0a062]">Price Per Unit</th>
-                      <th className="text-left p-2 text-[#c0a062]">Total Price</th>
-                      <th className="text-left p-2 text-[#c0a062]">Ends At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sellOffers.map((offer) => (
-                      <tr key={offer.id} className="border-b border-[#3d3d3d]">
-                        <td className="p-2 text-[#c0a062]">{offer.playerName}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.amount}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.pricePerUnit}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.totalPrice}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.endsAt}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <h3 className="text-[#c0a062] text-lg mt-4 mb-2">Buy Offers:</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="border-b border-[#3d3d3d]">
-                    <tr>
-                      <th className="text-left p-2 text-[#c0a062]">Name</th>
-                      <th className="text-left p-2 text-[#c0a062]">Amount</th>
-                      <th className="text-left p-2 text-[#c0a062]">Price Per Unit</th>
-                      <th className="text-left p-2 text-[#c0a062]">Total Price</th>
-                      <th className="text-left p-2 text-[#c0a062]">Ends At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {buyOffers.map((offer) => (
-                      <tr key={offer.id} className="border-b border-[#3d3d3d]">
-                        <td className="p-2 text-[#c0a062]">{offer.playerName}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.amount}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.pricePerUnit}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.totalPrice}</td>
-                        <td className="p-2 text-[#c0a062]">{offer.endsAt}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Button
+                className="bg-[#3d3d3d] text-[#c0a062] hover:bg-[#4a4a4a] mr-2"
+                onClick={onSwitchPlayer}
+              >
+                Switch Player
+              </Button>
+              <Button
+                className="bg-[#3d3d3d] text-[#c0a062] hover:bg-[#4a4a4a]"
+                onClick={() => onCreateOffer("")}
+              >
+                Create Offer
+              </Button>
             </div>
           </div>
-        </FF14Box>
-        <div className="flex justify-between items-center">
-          <div className="bg-[#1d1d1d] bg-opacity-90 border border-[#3d3d3d] rounded-md overflow-hidden p-2 text-xl text-[#c0a062]">
-            Gold: {player.gold}
-          </div>
-          <div>
-            <button
-              className="px-4 py-2 bg-[#3d3d3d] text-[#c0a062] rounded hover:bg-[#4a4a4a] mr-2"
-              onClick={onSwitchPlayer}
-            >
-              Switch Player
-            </button>
-            <button
-              className="px-4 py-2 bg-[#3d3d3d] text-[#c0a062] rounded hover:bg-[#4a4a4a]"
-              onClick={() => onCreateOffer("")}
-            >
-              Create Offer
-            </button>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
 };
 
-const CreateOfferModal: React.FC<{
+export const CreateOfferModal: React.FC<{
   player: Player;
   item: string;
   onClose: () => void;
@@ -274,80 +315,90 @@ const CreateOfferModal: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <FF14Box title={`Create Offer: ${item}`}>
-        <div className="space-y-4">
-          <div>
-            <label className="block mb-1 text-[#c0a062]">Price Per Unit:</label>
-            <input
-              type="number"
-              className="w-full p-2 bg-[#2a2a2a] border border-[#3d3d3d] rounded text-[#c0a062]"
-              value={pricePerUnit}
-              onChange={(e) => setPricePerUnit(Number(e.target.value))}
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-[#c0a062]">Amount:</label>
-            <input
-              type="number"
-              className="w-full p-2 bg-[#2a2a2a] border border-[#3d3d3d] rounded text-[#c0a062]"
-              value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
-              max={maxAmount}
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-[#c0a062]">Ends At:</label>
-            <input
-              type="date"
-              className="w-full p-2 bg-[#2a2a2a] border border-[#3d3d3d] rounded text-[#c0a062]"
-              value={endsAt}
-              onChange={(e) => setEndsAt(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block mb-1 text-[#c0a062]">Offer Type:</label>
-            <div className="flex space-x-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  className="form-radio text-[#c0a062]"
-                  name="offerType"
-                  value="buy"
-                  checked={offerType === "buy"}
-                  onChange={() => setOfferType("buy")}
-                />
-                <span className="ml-2 text-[#c0a062]">Buy</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  className="form-radio text-[#c0a062]"
-                  name="offerType"
-                  value="sell"
-                  checked={offerType === "sell"}
-                  onChange={() => setOfferType("sell")}
-                />
-                <span className="ml-2 text-[#c0a062]">Sell</span>
-              </label>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.3 }}
+      >
+        <FF14Box title={`Create Offer: ${item}`}>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="pricePerUnit" className="text-[#c0a062]">
+                Price Per Unit:
+              </Label>
+              <Input
+                id="pricePerUnit"
+                type="number"
+                className="w-full bg-[#2a2a2a] border-[#3d3d3d] text-[#c0a062]"
+                value={pricePerUnit}
+                onChange={(e) => setPricePerUnit(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="amount" className="text-[#c0a062]">
+                Amount:
+              </Label>
+              <Input
+                id="amount"
+                type="number"
+                className="w-full bg-[#2a2a2a] border-[#3d3d3d] text-[#c0a062]"
+                value={amount}
+                onChange={(e) => setAmount(Number(e.target.value))}
+                max={maxAmount}
+              />
+            </div>
+            <div>
+              <Label htmlFor="endsAt" className="text-[#c0a062]">
+                Ends At:
+              </Label>
+              <Input
+                id="endsAt"
+                type="date"
+                className="w-full bg-[#2a2a2a] border-[#3d3d3d] text-[#c0a062]"
+                value={endsAt}
+                onChange={(e) => setEndsAt(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label className="text-[#c0a062]">Offer Type:</Label>
+              <RadioGroup
+                value={offerType}
+                onValueChange={(value) => setOfferType(value as "buy" | "sell")}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="buy" id="buy" className="text-[#c0a062]" />
+                  <Label htmlFor="buy" className="text-[#c0a062]">
+                    Buy
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="sell" id="sell" className="text-[#c0a062]" />
+                  <Label htmlFor="sell" className="text-[#c0a062]">
+                    Sell
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+            <div className="text-xl text-[#c0a062]">Total Price: {totalPrice}</div>
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                className="bg-[#3d3d3d] text-[#c0a062] hover:bg-[#4a4a4a] border-[#3d3d3d]"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleCreateOffer}
+                className="bg-[#3d3d3d] text-[#c0a062] hover:bg-[#4a4a4a] border-[#3d3d3d]"
+              >
+                Create Offer
+              </Button>
             </div>
           </div>
-          <div className="text-xl text-[#c0a062]">Total Price: {totalPrice}</div>
-          <div className="flex justify-end space-x-2">
-            <button
-              className="px-4 py-2 bg-[#3d3d3d] text-[#c0a062] rounded hover:bg-[#4a4a4a]"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className="px-4 py-2 bg-[#3d3d3d] text-[#c0a062] rounded hover:bg-[#4a4a4a]"
-              onClick={handleCreateOffer}
-            >
-              Create Offer
-            </button>
-          </div>
-        </div>
-      </FF14Box>
+        </FF14Box>
+      </motion.div>
     </div>
   );
 };
@@ -386,26 +437,28 @@ const FF14ItemTradingSystem: React.FC = () => {
     }
   };
 
-  if (!currentPlayer) {
-    return <PlayerImpersonation onImpersonate={handleImpersonate} />;
-  }
-
   return (
     <div className="bg-[url('https://i.imgur.com/uBGMSA3.jpeg')] bg-cover bg-center min-h-screen">
-      <Dashboard
-        player={currentPlayer}
-        offers={offers}
-        onSwitchPlayer={() => setCurrentPlayer(null)}
-        onCreateOffer={setCreateOfferItem}
-      />
-      {createOfferItem !== null && (
-        <CreateOfferModal
-          player={currentPlayer}
-          item={createOfferItem}
-          onClose={() => setCreateOfferItem(null)}
-          onCreateOffer={handleCreateOffer}
-        />
-      )}
+      <AnimatePresence>
+        {!currentPlayer ? (
+          <PlayerImpersonation onImpersonate={handleImpersonate} />
+        ) : (
+          <Dashboard
+            player={currentPlayer}
+            offers={offers}
+            onSwitchPlayer={() => setCurrentPlayer(null)}
+            onCreateOffer={setCreateOfferItem}
+          />
+        )}
+        {createOfferItem !== null && (
+          <CreateOfferModal
+            player={currentPlayer!}
+            item={createOfferItem}
+            onClose={() => setCreateOfferItem(null)}
+            onCreateOffer={handleCreateOffer}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
