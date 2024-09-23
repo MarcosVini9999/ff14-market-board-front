@@ -1,13 +1,23 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreateOfferDto, Offer, OfferType } from "@/types";
+import { CreateOfferDto, Offer } from "@/types";
 import { offerQueryKeys } from "./offer-query-keys";
 import { playerQueryKeys } from "../players/player-query-keys";
 import { inventoryQueryKeys } from "../inventories/inventory-query-keys";
-import { offersApi } from "@/lib/api";
 
-async function createOffer(newOffer: CreateOfferDto) {
-  const response = await offersApi.create(newOffer);
-  return response.data;
+async function createOffer(newOffer: CreateOfferDto): Promise<Offer> {
+  const response = await fetch(`/api/offers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newOffer),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create offer");
+  }
+
+  return response.json();
 }
 
 export function useCreateOffer() {

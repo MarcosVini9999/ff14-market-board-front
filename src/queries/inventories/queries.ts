@@ -1,14 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { inventoryQueryKeys } from "./inventory-query-keys";
-import { inventoriesApi } from "@/lib/api";
+import { Inventory } from "@/types";
 
-async function getInventories(playerId: number) {
-  const response = await inventoriesApi.findAll();
-  return response.data.filter((inv) => inv.player.id === playerId);
+async function getInventories(playerId: number): Promise<Inventory[]> {
+  const response = await fetch(`/api/inventories`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch inventories");
+  }
+
+  const data: Inventory[] = await response.json();
+  return data.filter((inv) => inv.player.id === playerId);
 }
 
 export function useInventories(playerId: number) {
-  return useQuery({
+  return useQuery<Inventory[]>({
     queryKey: inventoryQueryKeys.list(playerId),
     queryFn: () => getInventories(playerId),
   });
