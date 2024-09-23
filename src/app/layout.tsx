@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import ReactQueryProvider from "@/contexts/QueryContext";
 
 const trajanpro = localFont({
   src: "./fonts/TrajanPro-Regular.ttf",
@@ -20,7 +21,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${trajanpro.variable} antialiased`}>{children}</body>
+      <ReactQueryProvider>
+        <body
+          className={`${trajanpro.variable} antialiased bg-[url('https://i.imgur.com/uBGMSA3.jpeg')] bg-cover bg-center
+            min-h-screen`}
+        >
+          {children}
+        </body>
+      </ReactQueryProvider>
     </html>
   );
 }
