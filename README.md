@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+![Favicon](src/app/favicon.ico)
 
-## Getting Started
+# FF14 Marketplace Dashboard
 
-First, run the development server:
+A responsive and interactive dashboard for managing player inventories and offers in a marketplace for Final Fantasy XIV (FF14). The application allows users to impersonate players, search for items, create buy/sell offers, and manage their inventories.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Player Impersonation**: Select and impersonate any player from the list.
+- **Item Search**: Search for items using a live search input.
+- **Offer Management**: Create buy or sell offers with validation.
+- **Inventory Overview**: View current inventories and offers.
+- **Responsive Design**: The dashboard adapts to different screen sizes.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Technologies Used
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **React**: For building the user interface.
+- **Framer Motion**: For animations and transitions.
+- **Lucide Icons**: For iconography.
+- **Tailwind CSS**: For styling components.
+- **TypeScript**: For type safety.
+- **React Query**: For managing server state and data fetching.
+- **Shadcn**: For building accessible and reusable components.
 
-## Learn More
+## Installation
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MarcosVini9999/ff14-market-board-front
+   ```
+2. Navigate into the project directory:
+   ```bash
+   cd ff14-marketplace-dashboard
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+4. Create a .env file in the root directory and add the following variable:
+   ```bash
+   NEXT_PUBLIC_API_BASE_URL='http://localhost:3000'
+   ```
+5. Run the application:
+   ```bash
+   npm run dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Usage
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Start the application to view the dashboard.
+- Select a player from the impersonation dropdown to manage their inventory.
+- Use the item search feature to find specific items.
+- Create offers by filling out the form in the "Create Offer" modal.
 
-## Deploy on Vercel
+## Developer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Marcos Vinicius Andrade de Sousa <marcosviniciusandradedesousa@hotmail.com>
