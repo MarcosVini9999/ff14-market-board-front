@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReactQueryProvider from "@/contexts/QueryContext";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const trajanpro = localFont({
   src: "./fonts/TrajanPro-Regular.ttf",
@@ -27,6 +29,7 @@ export default function RootLayout({
             min-h-screen`}
         >
           {children}
+          <ToastContainer theme="colored" />
         </body>
       </ReactQueryProvider>
     </html>

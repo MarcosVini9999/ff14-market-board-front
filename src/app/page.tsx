@@ -28,6 +28,7 @@ import { useInventories } from "@/queries/inventories/queries";
 import { useOffers } from "@/queries/offers/queries";
 import { useItems } from "@/queries/items/queries";
 import { useCreateOffer } from "@/queries/offers/mutations";
+import { toast } from "react-toastify";
 
 const FF14Box: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="bg-[#1d1d1d] bg-opacity-90 border border-[#3d3d3d] rounded-md overflow-hidden">
@@ -148,8 +149,16 @@ const Dashboard: React.FC<{
   onCreateOffer: () => void;
 }> = ({ player, onSwitchPlayer, onCreateOffer }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const { data: inventories = [] } = useInventories(player.id);
-  const { data: offers = [] } = useOffers();
+  const { data: inventories = [], isError: isInventoriesError } = useInventories(player.id);
+  const { data: offers = [], isError: isOffersError } = useOffers();
+
+  if (isInventoriesError) {
+    toast.error("Failed to load inventories. Please try again.");
+  }
+
+  if (isOffersError) {
+    toast.error("Failed to load offers. Please try again.");
+  }
 
   const filteredInventories = inventories.filter((inv) =>
     inv.item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -178,7 +187,6 @@ const Dashboard: React.FC<{
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <Search className="absolute left-2 top-2.5 text-[#c0a062]" />
                   </div>
                 </div>
                 <div className="space-y-1 max-h-96 overflow-y-auto">
@@ -288,7 +296,6 @@ const Dashboard: React.FC<{
     </div>
   );
 };
-
 const CreateOfferModal: React.FC<{
   player: Player;
   item: Item;
@@ -311,22 +318,33 @@ const CreateOfferModal: React.FC<{
 
   const handleCreateOffer = () => {
     if (offerType === OfferType.BUY && totalValue > player.gold) {
-      alert("You don't have enough gold for this offer!");
+      toast.error("You don't have enough gold for this offer!");
       return;
     }
     if (offerType === OfferType.SELL && quantity > maxQuantity) {
-      alert("You don't have enough items for this offer!");
+      toast.error("You don't have enough items for this offer!");
       return;
     }
-    createOfferMutation.mutate({
-      type: offerType,
-      pricePerUnit,
-      quantity,
-      playerId: player.id,
-      itemId: item.id,
-      endsAt: new Date(endsAt),
-    });
-    onClose();
+
+    createOfferMutation.mutate(
+      {
+        type: offerType,
+        pricePerUnit,
+        quantity,
+        playerId: player.id,
+        itemId: item.id,
+        endsAt: new Date(endsAt),
+      },
+      {
+        onSuccess: () => {
+          toast.success("Offer created successfully!");
+          onClose();
+        },
+        onError: () => {
+          toast.error("Failed to create offer. Please try again.");
+        },
+      }
+    );
   };
 
   return (
